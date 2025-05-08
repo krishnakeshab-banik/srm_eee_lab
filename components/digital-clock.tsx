@@ -1,37 +1,45 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 export function DigitalClock() {
-  const [time, setTime] = useState(new Date())
+    // Initialize with an empty time string to avoid hydration mismatch
+    const [timeString, setTimeString] = useState("");
+    const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date())
-    }, 1000)
+    useEffect(() => {
+        // Mark component as mounted
+        setMounted(true);
 
-    return () => {
-      clearInterval(timer)
-    }
-  }, [])
+        // Set initial time
+        setTimeString(formatTime(new Date()));
 
-  const formatTime = (date: Date) => {
-    const hours = date.getHours().toString().padStart(2, "0")
-    const minutes = date.getMinutes().toString().padStart(2, "0")
-    const seconds = date.getSeconds().toString().padStart(2, "0")
-    return `${hours}:${minutes}:${seconds}`
-  }
+        const timer = setInterval(() => {
+            setTimeString(formatTime(new Date()));
+        }, 1000);
 
-  return (
-    <motion.div
-      className="fixed top-4 right-4 z-50 font-mono text-neutral-700 text-sm bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full border border-neutral-200"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5 }}
-    >
-      {formatTime(time)}
-    </motion.div>
-  )
+        return () => {
+            clearInterval(timer);
+        };
+    }, []);
+
+    const formatTime = (date: Date) => {
+        const hours = date.getHours().toString().padStart(2, "0");
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const seconds = date.getSeconds().toString().padStart(2, "0");
+        return `${hours}:${minutes}:${seconds}`;
+    };
+
+    // Only render the clock content after client-side mounting
+    return (
+        <motion.div
+            className="fixed top-4 right-4 z-50 font-mono text-neutral-700 text-sm bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full border border-neutral-200"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+        >
+            {mounted ? timeString : ""}
+        </motion.div>
+    );
 }
-

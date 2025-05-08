@@ -20,11 +20,12 @@ export default function RootLayout({
     return (
         <html
             lang="en"
-            className="dark overflow-x-hidden"
+            className="overflow-x-hidden dark"
             style={{ colorScheme: "dark" }}
         >
             <body
                 className={`${inter.className} bg-black text-white overflow-x-hidden`}
+                suppressHydrationWarning
             >
                 <ThemeProvider
                     attribute="class"
